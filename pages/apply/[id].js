@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import axios from "axios";
-import FormData from "form-data";
-import { z } from "zod";
-import Link from "next/link";
+import React, { useState, useEffect } from "react"
+import { useRouter } from "next/router"
+import axios from "axios"
+import FormData from "form-data"
+import { z } from "zod"
+import Link from "next/link"
 const schema = z.object({
   name: z.string().min(1, "Please enter your name"),
   email: z.string().email("Please enter a valid email"),
   location: z.string().min(1, "Please enter your location"),
   coverLetter: z.string().min(1, "Please enter your cover letter"),
   expectedCTC: z.string().min(1, "Please enter your expected CTC"),
-});
+})
 
 const Apply = () => {
-  const router = useRouter();
-  const { id } = router.query;
-  const [jobDetails, setJobDetails] = useState(null);
+  const router = useRouter()
+  const { id } = router.query
+  const [jobDetails, setJobDetails] = useState(null)
+  const [isSubmitModalOpen, setSubmitModalOpen] = useState(false)
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -23,76 +25,76 @@ const Apply = () => {
     coverLetter: "",
     expectedCTC: "",
     resume: null,
-  });
-  const [errors, setErrors] = useState({});
+  })
+  const [errors, setErrors] = useState({})
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
           `http://localhost:3001/api/jobs/${id}`
-        );
-        const jobDetailsData = response.data;
-        setJobDetails(jobDetailsData);
+        )
+        const jobDetailsData = response.data
+        setJobDetails(jobDetailsData)
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
-    };
+    }
 
     if (id) {
-      fetchData();
+      fetchData()
     }
-  }, [id]);
+  }, [id])
 
   const handleChange = (e) => {
     if (e.target.name === "resume") {
       setFormData((prevData) => ({
         ...prevData,
         resume: e.target.files[0],
-      }));
+      }))
     } else {
       setFormData((prevData) => ({
         ...prevData,
         [e.target.name]: e.target.value,
-      }));
+      }))
     }
-  };
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      const validatedData = schema.parse(formData);
+      const validatedData = schema.parse(formData)
 
-      const formDataWithResume = new FormData();
-      formDataWithResume.append("name", validatedData.name);
-      formDataWithResume.append("email", validatedData.email);
-      formDataWithResume.append("location", validatedData.location);
-      formDataWithResume.append("coverLetter", validatedData.coverLetter);
-      formDataWithResume.append("expectedCTC", validatedData.expectedCTC);
-      formDataWithResume.append("resume", formData.resume);
+      const formDataWithResume = new FormData()
+      formDataWithResume.append("name", validatedData.name)
+      formDataWithResume.append("email", validatedData.email)
+      formDataWithResume.append("location", validatedData.location)
+      formDataWithResume.append("coverLetter", validatedData.coverLetter)
+      formDataWithResume.append("expectedCTC", validatedData.expectedCTC)
+      formDataWithResume.append("resume", formData.resume)
 
       const response = await axios.post(
         `http://localhost:3001/api/jobs/${id}/apply`,
         formDataWithResume
-      );
+      )
+      setSubmitModalOpen(true) // Open the submit modal
 
-      console.log(response.data);
-      router.push("/");
+      console.log(response.data)
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const errorMap = error.flatten().fieldErrors;
-        const validationErrors = {};
+        const errorMap = error.flatten().fieldErrors
+        const validationErrors = {}
 
         for (const field in errorMap) {
-          validationErrors[field] = errorMap[field][0];
+          validationErrors[field] = errorMap[field][0]
         }
 
-        setErrors(validationErrors);
+        setErrors(validationErrors)
       } else {
-        console.error(error);
+        console.error(error)
       }
     }
-  };
+  }
 
   return (
     <div>
@@ -107,24 +109,25 @@ const Apply = () => {
         </div>
       </nav>
       <div className="container mx-auto p-4">
-        {jobDetails ? (
+        { jobDetails ? (
           <div className="flex mx-auto flex-wrap justify-center mt-14">
             <div className="max-w-md shadow-md p-2">
               <h2 className="text-2xl font-mono font-bold mb-4">
-                This Job Application is for {jobDetails.title} at{" "}
-                {jobDetails.company}
+                This Job Application is for { jobDetails.title } at{ " " }
+                { jobDetails.company }
               </h2>
+              <p className="text-sm font-mono font-bold  mb-4">
+                Location: { jobDetails.location }
+              </p>
+              <p className="text-sm font-mono font-bold  mb-4">
+                Salary: { jobDetails.salary }
+              </p>
               <p className="text-sm font-serif mb-4">
-                Job Description: {jobDetails.description}
+                Job Description: { jobDetails.description }
               </p>
-              <p className="text-sm font-mono font-bold  mb-4">
-                Location: {jobDetails.location}
-              </p>
-              <p className="text-sm font-mono font-bold  mb-4">
-                Salary: {jobDetails.salary}
-              </p>
+
             </div>
-            <form onSubmit={handleSubmit} className="max-w-md ml-36 font-mono">
+            <form onSubmit={ handleSubmit } className="max-w-md ml-36 font-mono">
               <div className="mb-4">
                 <label
                   htmlFor="name"
@@ -138,10 +141,10 @@ const Apply = () => {
                   name="name"
                   className="border border-gray-300 p-2 w-full rounded-md"
                   placeholder="Enter your name"
-                  value={formData.name}
-                  onChange={handleChange}
+                  value={ formData.name }
+                  onChange={ handleChange }
                 />
-                {errors.name && <p className="text-red-500">{errors.name}</p>}
+                { errors.name && <p className="text-red-500">{ errors.name }</p> }
               </div>
               <div className="mb-4">
                 <label
@@ -156,10 +159,10 @@ const Apply = () => {
                   name="email"
                   className="border border-gray-300 p-2 w-full rounded-md"
                   placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={handleChange}
+                  value={ formData.email }
+                  onChange={ handleChange }
                 />
-                {errors.email && <p className="text-red-500">{errors.email}</p>}
+                { errors.email && <p className="text-red-500">{ errors.email }</p> }
               </div>
               <div className="mb-4">
                 <label
@@ -174,12 +177,12 @@ const Apply = () => {
                   name="location"
                   className="border border-gray-300 p-2 w-full rounded-md"
                   placeholder="Enter your location"
-                  value={formData.location}
-                  onChange={handleChange}
+                  value={ formData.location }
+                  onChange={ handleChange }
                 />
-                {errors.location && (
-                  <p className="text-red-500">{errors.location}</p>
-                )}
+                { errors.location && (
+                  <p className="text-red-500">{ errors.location }</p>
+                ) }
               </div>
               <div className="mb-4">
                 <label
@@ -194,12 +197,12 @@ const Apply = () => {
                   className="border border-gray-300 p-2 w-full rounded-md"
                   placeholder="Write your cover letter"
                   rows="4"
-                  value={formData.coverLetter}
-                  onChange={handleChange}
+                  value={ formData.coverLetter }
+                  onChange={ handleChange }
                 ></textarea>
-                {errors.coverLetter && (
-                  <p className="text-red-500">{errors.coverLetter}</p>
-                )}
+                { errors.coverLetter && (
+                  <p className="text-red-500">{ errors.coverLetter }</p>
+                ) }
               </div>
               <div className="mb-4">
                 <label
@@ -214,12 +217,12 @@ const Apply = () => {
                   name="expectedCTC"
                   className="border border-gray-300 p-2 w-full rounded-md"
                   placeholder="Enter your expected CTC"
-                  value={formData.expectedCTC}
-                  onChange={handleChange}
+                  value={ formData.expectedCTC }
+                  onChange={ handleChange }
                 />
-                {errors.expectedCTC && (
-                  <p className="text-red-500">{errors.expectedCTC}</p>
-                )}
+                { errors.expectedCTC && (
+                  <p className="text-red-500">{ errors.expectedCTC }</p>
+                ) }
               </div>
               <div className="mb-4">
                 <label
@@ -234,11 +237,11 @@ const Apply = () => {
                   name="resume"
                   className="border border-gray-300 p-2 w-full rounded-md"
                   accept=".pdf,.doc,.docx"
-                  onChange={handleChange}
+                  onChange={ handleChange }
                 />
-                {errors.resume && (
-                  <p className="text-red-500">{errors.resume}</p>
-                )}
+                { errors.resume && (
+                  <p className="text-red-500">{ errors.resume }</p>
+                ) }
               </div>
               <button
                 type="submit"
@@ -250,10 +253,35 @@ const Apply = () => {
           </div>
         ) : (
           <div>Loading...</div>
-        )}
+        ) }
       </div>
-    </div>
-  );
-};
+      // ...
 
-export default Apply;
+      { isSubmitModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded shadow-md">
+            <p className="text-lg font-bold mb-2">Application Submitted</p>
+            <p className="text-gray-600">
+              Thank you for submitting your application. We will review it soon.
+            </p>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4 hover:bg-blue-600"
+              onClick={ () => {
+                setSubmitModalOpen(false) // Close the submit modal
+                router.push("/") // Navigate to the home page
+              } }
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      ) }
+
+// ...
+
+    </div>
+
+  )
+}
+
+export default Apply
