@@ -50,18 +50,10 @@ const Apply = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const form = new FormData();
-    form.append("name", formData.name);
-    form.append("email", formData.email);
-    form.append("location", formData.location);
-    form.append("coverLetter", formData.coverLetter);
-    form.append("expectedCTC", formData.expectedCTC);
-    form.append("resume", formData.resume);
-
     try {
       const response = await axios.post(
-        `http://localhost:3001/api/:${id}/apply`,
-        form,
+        `http://localhost:3001/api/jobs/${id}/apply`,
+        formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
