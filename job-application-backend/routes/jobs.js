@@ -90,6 +90,7 @@ router.post('/:id/apply', upload.single('resume'), async (req, res) => {
       coverLetter,
       expectedCTC,
       resume: resumePath,
+      jobID: id,
     })
     await user.save()
 
