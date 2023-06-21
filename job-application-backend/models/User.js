@@ -25,9 +25,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  job: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Job',
+  jobID: {
+    type: String,
     required: true,
   },
 })
