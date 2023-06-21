@@ -9,15 +9,7 @@ const schema = z.object({
   email: z.string().email("Please enter a valid email"),
   location: z.string().min(1, "Please enter your location"),
   coverLetter: z.string().min(1, "Please enter your cover letter"),
-  expectedCTC: z.string().min(1, "Please enter your expected CTC"),
-  resume: z
-    .object({
-      name: z.string(),
-      type: z.string(),
-      size: z.number(),
-    })
-    .nullable()
-    .optional(),
+  expectedCTC: z.string().min(1, "Please enter your expected CTC")
 })
 
 const Apply = () => {
@@ -66,17 +58,16 @@ const Apply = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
     try {
       const validatedData = schema.parse(formData)
 
       const formDataWithResume = new FormData()
-      formDataWithResume.append("resume", validatedData.resume)
       formDataWithResume.append("name", validatedData.name)
       formDataWithResume.append("email", validatedData.email)
       formDataWithResume.append("location", validatedData.location)
       formDataWithResume.append("coverLetter", validatedData.coverLetter)
       formDataWithResume.append("expectedCTC", validatedData.expectedCTC)
+      formDataWithResume.append("resume", formData.resume)
 
       const response = await axios.post(
         `http://localhost:3001/api/jobs/${id}/apply`,
