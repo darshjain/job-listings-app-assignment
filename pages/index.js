@@ -23,7 +23,9 @@ const Home = ({ jobs }) => {
               <div className="bg-white p-4 rounded shadow hover:bg-gray-100 transition-colors cursor-pointer">
                 <h2 className="text-xl font-bold mb-2">{ job.title }</h2>
                 <p className="text-gray-600 mb-4">{ job.company }</p>
-                <p className="text-gray-700">{ job.description }</p>
+                <div className="overflow-hidden h-32">
+                  <p className="text-gray-700">{ job.description }</p>
+                </div>
                 <div className="mt-4">
                   <p className="text-gray-500">Location: { job.location }</p>
                   <p className="text-gray-500">Salary: { job.salary }</p>
